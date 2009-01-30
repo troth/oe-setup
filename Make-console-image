@@ -1,0 +1,5 @@
+#!/bin/bash
+
+. ./SetupEnv
+
+bitbake base-image && bitbake console-image

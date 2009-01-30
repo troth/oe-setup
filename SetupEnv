@@ -1,0 +1,7 @@
+#!/bin/bash
+
+BASE="/home/roth/dev/OE"
+
+export BBPATH="$BASE/build:$BASE/openembedded"
+export PATH="$BASE/bitbake/bin:$PATH"
+
