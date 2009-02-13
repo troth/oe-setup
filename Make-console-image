@@ -2,4 +2,7 @@
 
 . ./SetupEnv
 
-bitbake base-image && bitbake console-image
+set -e
+
+#bitbake base-image
+bitbake console-image

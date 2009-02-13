@@ -1,0 +1,64 @@
+#!/bin/sh
+# Copyright (c) 2007, Technologic Systems.
+# All rights reserved.
+#
+# Uses initrd as root filesystem and drops to shell-- on exit of serial shell,
+# real Linux is booted.  Ethernet is configured as 192.168.0.50 and telnet
+# server is run.  If a USB device is present, it is checked for the presence
+# of an auto-update script "/tsinit", which is then run.
+
+export PATH=/bin:/sbin:/lbin:/mnt/root/bin:/mnt/root/sbin:/mnt/root/usr/bin:/mnt/root/usr/sbin:/mnt/root/usr/local/bin:/mnt/root/urs/local/sbin
+export LD_LIBRARY_PATH=/lib:/usr/lib
+export CONSOLE=/dev/ttyS0
+
+setconsole $CONSOLE
+stty -F $CONSOLE ospeed 115200 > /dev/null 2>&1
+
+mount -t proc none /proc
+mount -t sysfs none /sys
+mount -t tmpfs none /dev
+mkdir /dev/pts /dev/shm
+mount -t devpts none /dev/pts
+mount -t tmpfs none /dev/shm
+
+mdev -s
+
+hostname ts7800
+ifconfig lo 127.0.0.1 up
+route add -net 127.0.0.0 netmask 255.0.0.0 lo
+ifconfig eth0 192.168.1.51 up
+route add default 192.168.1.51 eth0
+
+mount 192.168.1.50:/home/roth/dev/Linux/TS7800-root /mnt/root -o nolock
+
+## /sbin/telnetd > /dev/null 2>&1 &
+
+#
+# Add a README-ts7800-root file to the nfs root filesystem. If it is there,
+# then it will be used as root. A quick way to disable jumping into the nfs
+# root if you need to debug something is to rename or remove the file.
+#
+if [ -e /mnt/root/README-ts7800-root ]
+then
+    echo " " > $CONSOLE 2>&1
+    echo " " > $CONSOLE 2>&1
+    echo " " > $CONSOLE 2>&1
+    echo " " > $CONSOLE 2>&1
+    echo "Pivoting to NFS Root filesystem." > $CONSOLE 2>&1
+    echo " " > $CONSOLE 2>&1
+    echo " " > $CONSOLE 2>&1
+    echo " " > $CONSOLE 2>&1
+    echo " " > $CONSOLE 2>&1
+    cd /mnt/root
+    pivot_rot . ./initrd
+    ./bin/mount -n --move ./initrd/sys ./sys
+    ./bin/mount -n --move ./initrd/proc ./proc
+    ./bin/mount -n --move ./initrd/dev ./dev
+    exec ./usr/sbin/chroot . ./sbin/init < .$CONSOLE > .$CONSOLE 2>&1
+fi
+
+echo "NFS Mount to 192.168.1.50 failed." > $CONSOLE 2>&1
+
+export ENV=/shinit
+exec /bin/cttyhack /bin/sh -i < $CONSOLE > $CONSOLE 2>&1
+
