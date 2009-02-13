@@ -27,6 +27,12 @@ git clone git://git.openembedded.net/openembedded
 cd openembedded
 
 #
+# This creates a local branch for the ts7800
+#
+git branch --track ts7800 origin/org.openembedded.dev
+git checkout ts7800
+
+#
 # This allows simple access to the oe-ts7xxx repository on top of the official
 # OE repository.
 #
