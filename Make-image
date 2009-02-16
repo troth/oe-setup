@@ -1,0 +1,25 @@
+#!/bin/bash
+
+. ./SetupEnv
+
+set -e
+
+IMAGES=(initramfs-minimal-image console-image minimal-image)
+
+MENUITEMS=""
+for i in ${!IMAGES[*]}
+do
+    MENUITEMS="$MENUITEMS $i ${IMAGES[$i]}"
+done
+
+if dialog --menu "Select an image target" 12 40 6 $MENUITEMS 2>.menu_selection
+then
+    selection="$(cat .menu_selection)"
+    rm -f .menu_selection
+    echo "You selected: ${IMAGES[$selection]}"
+else
+    echo "Selection canceled."
+    exit 0
+fi
+
+bitbake ${IMAGES[$selection]}
