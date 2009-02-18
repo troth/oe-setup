@@ -4,7 +4,12 @@
 
 set -e
 
-IMAGES=(initramfs-minimal-image console-image minimal-image)
+IMAGES=(\
+    initramfs-custom-image \
+    initramfs-minimal-image \
+    console-image \
+    minimal-image \
+)
 
 MENUITEMS=""
 for i in ${!IMAGES[*]}
