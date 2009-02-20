@@ -1,4 +1,4 @@
 openembedded*
 tmp*
 sources
-bitbake
+bitbake*
