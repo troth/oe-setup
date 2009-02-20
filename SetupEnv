@@ -1,7 +1,9 @@
 #!/bin/sh
 
-BASE="${HOME}/dev/OE"
+BASE="${PWD}"
 
 export BBPATH="${BASE}/build:$BASE/openembedded"
 export PATH="${BASE}/bitbake/bin:$PATH"
 
+echo "BBPATH = ${BBPATH}"
+echo "PATH = ${PATH}"
