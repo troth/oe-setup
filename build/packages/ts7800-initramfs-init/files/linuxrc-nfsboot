@@ -1,0 +1,21 @@
+#! /bin/sh
+
+export CONSOLE=/dev/ttyS0
+setconsole $CONSOLE
+
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+export LD_LIBRARY_PATH=/lib:/usr/lib
+
+test -d /proc || mkdir /proc
+mount -t proc none /proc
+
+test -d /sys || mkdir /sys
+mount -t sysfs none /sys
+
+test -d /tmp || mkdir /tmp
+mount -t tmpfs none /tmp
+
+#test -d /var || mkdir /var
+#mount -t tmpfs none /var
+
+exec /bin/cttyhack /bin/sh -i < $CONSOLE > $CONSOLE 2>&1

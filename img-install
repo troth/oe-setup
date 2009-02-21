@@ -1,0 +1,51 @@
+#! /bin/bash
+
+if [ "$(id -u)" != "0" ]
+then
+	echo "Becoming root to run this script."
+	sudo $0 $@
+	exit 0
+fi
+
+. ./SetupEnv
+
+#
+# I have given the initrd partition on the SD card a label of "Initrd" so that
+# it will always be mounted at /media/Initrd. Change the INSTALL_DIR default
+# value to suit your own needs.
+#
+
+DST=${INSTALL_DIR:-/media/Initrd}
+SRC=${IMAGE_DIR:-$PWD/tmp/deploy/uclibc/images/ts7800}
+IMG=${IMAGE_NAME:-initramfs-custom-image-ts7800.tar.bz2}
+IMG_FILE="${SRC}/${IMG}"
+
+echo "DST = ${DST}"
+echo "SRC = ${SRC}"
+echo "IMG = ${IMG}"
+
+if [ ! -e "${IMG_FILE}" ]
+then
+	echo "$IMG_FILE does not exist."
+	exit 1
+fi
+
+set -e
+
+cd ${DST}
+if [ ! -d lost+found ]
+then
+	echo "${DST} does not appear to be a mounted SD partition (no lost+found)"
+	echo "Bailing out."
+	exit 1
+fi
+
+echo
+echo "PWD is $PWD"
+echo -n "Is it safe to delete everything in this directory? [y/n] "
+read ans junk
+if [ "x$ans" = "xy" ]
+then
+	find ./* | grep -v 'lost+found' | xargs rm -rf
+	tar -xjf ${IMG_FILE}
+fi

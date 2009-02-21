@@ -6,6 +6,7 @@ IMAGE_INSTALL = "\
     base-files \
     sysvinit \
     netbase \
+    ts7800-initramfs-init \
     "
 
 export IMAGE_BASENAME = "initramfs-custom-image"
