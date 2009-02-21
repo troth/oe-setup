@@ -7,7 +7,7 @@
 # server is run.  If a USB device is present, it is checked for the presence
 # of an auto-update script "/tsinit", which is then run.
 
-export PATH=/bin:/sbin:/lbin:/mnt/root/bin:/mnt/root/sbin:/mnt/root/usr/bin:/mnt/root/usr/sbin:/mnt/root/usr/local/bin:/mnt/root/urs/local/sbin
+export PATH=/bin:/sbin:/lbin:/mnt/root/bin:/mnt/root/sbin:/mnt/root/usr/bin:/mnt/root/usr/sbin:/mnt/root/usr/local/bin:/mnt/root/usr/local/sbin
 export LD_LIBRARY_PATH=/lib:/usr/lib
 export CONSOLE=/dev/ttyS0
 
