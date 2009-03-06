@@ -1,9 +1,12 @@
 #! /bin/bash
+#
+# Simple script to automate loading an initramfs image to the SD card.
+#
 
 if [ "$(id -u)" != "0" ]
 then
 	echo "Becoming root to run this script."
-	sudo $0 $@
+	exec sudo $0 $@
 	exit 0
 fi
 
