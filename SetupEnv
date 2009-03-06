@@ -1,9 +1,12 @@
 #!/bin/sh
 
-BASE="${PWD}"
+export BB_ENV_EXTRAWHITE="OEBASE"
 
-export BBPATH="${BASE}/build:$BASE/openembedded"
-export PATH="${BASE}/bitbake/bin:$PATH"
+export OEBASE="${PWD}"
 
+export BBPATH="${OEBASE}/build:${OEBASE}/openembedded"
+export PATH="${OEBASE}/bitbake/bin:$PATH"
+
+echo "OEBASE = ${OEBASE}"
 echo "BBPATH = ${BBPATH}"
 echo "PATH = ${PATH}"
