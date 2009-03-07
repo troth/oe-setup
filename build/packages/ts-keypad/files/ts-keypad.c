@@ -30,7 +30,7 @@
      * Pressing 'HELP' key will make a connection from KP4 to KP7.
      * etc.
 
-   For more info: http://www.actcomponents.com/index_004.htm
+   For more info on the keypad: http://www.actcomponents.com/index_004.htm
 
    The keypad is connected to the DIO header of the TS7800 via ribbon
    cable. The DIO header is a 2x8 connector layed out like this:
@@ -53,48 +53,53 @@
       KP6  |  DIO11  |  10
       KP7  |  DIO13  |  12
       KP8  |  DIO15  |  14
+
+   More info on the TS7800:
+
+     http://www.embeddedarm.com/about/resource.php?item=303
+
+   NOTE: the pinouts for the DIO header in the Preliminary Manual are wrong.
+   Pin 2 is GND and Pin 16 is 3.3V (VCC). See the schematic (which probing
+   with a DMM seems to agree with):
+
+     http://www.embeddedarm.com/documentation/ts-7800-schematic.pdf
  */
 
 #define DEV         "/dev/mem"
 #define DIO_BASE    0xE8000000
 #define DIO_INPUT   ((volatile uint32_t *)0xE8000004)
 #define DIO_OUTPUT  ((volatile uint32_t *)0xE8000008)
-#define PINMASK(x) (1 << (x << 1))
 
 struct dio {
     uint32_t unused;
-    uint32_t kp_input;
-    uint32_t kp_output;
+    volatile uint32_t kp_input;
+    volatile uint32_t kp_output;
 };
 typedef volatile struct dio dio_t;
 
 typedef enum keycodes {
-    KEY_UNKNOWN     = 0,
-    KEY_CLEAR       = 1,
-    KEY_0           = 2,
-    KEY_HELP        = 3,
-    KEY_ENTER       = 4,
-    KEY_1           = 5,
-    KEY_2           = 6,
-    KEY_3           = 7,
-    KEY_UP          = 8,
-    KEY_4           = 9,
-    KEY_5           = 10,
-    KEY_6           = 11,
-    KEY_DOWN        = 12,
-    KEY_7           = 13,
-    KEY_8           = 14,
-    KEY_9           = 15,
-    KEY_2ND         = 16,
+    KEY_UNKNOWN = 0,
+    KEY_1,
+    KEY_2,
+    KEY_3,
+    KEY_UP,
+    KEY_4,
+    KEY_5,
+    KEY_6,
+    KEY_DOWN,
+    KEY_7,
+    KEY_8,
+    KEY_9,
+    KEY_2ND,
+    KEY_CLEAR,
+    KEY_0,
+    KEY_HELP,
+    KEY_ENTER,
     KEY_NUM_CODES
 } keycode_t;
 
 const char * const key_names [] = {
     "UNKNOWN",
-    "CLEAR",
-    "0",
-    "HELP",
-    "ENTER",
     "1",
     "2",
     "3",
@@ -107,6 +112,10 @@ const char * const key_names [] = {
     "8",
     "9",
     "2ND",
+    "CLEAR",
+    "0",
+    "HELP",
+    "ENTER",
 };
 
 dio_t *dio;
@@ -124,30 +133,44 @@ printkey (int key)
     return -1;
 }
 
+/* Returns a mask with one bit set in bit number 0,2,4,6,... */
+#define PINMASK(x) (1 << ((x) << 1))
+#define OUT_DELAY 16
+
 int
 getkey (void)
 {
     int row;
     int col;
     uint32_t resp;
+    uint32_t mask;
     int key = 0;
 
     for (row = 0; row < 4; row++)
     {
         /* Drive all pins high except the current one. */
-        dio->kp_output = 0x5555U ^ PINMASK(row);
+        mask = 0x5555U ^ PINMASK(row);
+
+        /* NOTE: We loop when writing to the dio register because there is a
+           time delay between when we write to the register when the actual
+           pin state changes. If you don't have this delay, the read will be
+           reading the previous state and all the row information will be
+           offset by one. */
+        for (col = OUT_DELAY; col; col--)
+            dio->kp_output = mask;
 
         /* Read the state of column pins. Column pins that are pulled low will
            show up as 1 bits in resp. */
-        resp = 0x5500U ^ (0x5500U & dio->kp_input);
+        resp = (0x5500U ^ (0x5500U & dio->kp_input)) >> 8;
 
         if (resp)
         {
             for (col = 0; col < 4; col++)
             {
-                if (PINMASK(col) & (resp >> 8))
+                if (PINMASK(col) & resp)
                 {
                     key = 4 * row + col + 1;
+                    break;
                 }
             }
         }
@@ -180,6 +203,30 @@ accept_keypress (void)
     return key;
 }
 
+void
+debug (void)
+{
+    int i;
+    uint32_t row;
+    uint32_t col[4];            /* Resp values. */
+
+    while (1)
+    {
+        for (row = 0; row < 4; row++)
+        {
+            /* Drive the rows. See note above for reasoning of the loop. */
+            for (i = OUT_DELAY; i; i--)
+                dio->kp_output = (0x5555U ^ PINMASK(row));
+
+            col[row] = 0x5500U ^ (0x5500U & dio->kp_input);
+        }
+
+        fprintf (stdout, "COL = { 0x%04x, 0x%04x, 0x%04x, 0x%04x }\r",
+                 col[0], col[1], col[2], col[3]);
+        usleep (500);
+    }
+}
+
 int
 main (int argc, char **argv)
 {
@@ -199,6 +246,13 @@ main (int argc, char **argv)
     {
         fprintf (stderr, "ERR: mmap of " DEV " failed: %s\n", strerror (errno));
         exit (1);
+    }
+
+    /* Usage: if any args given, go into debug mode. */
+    if (argc > 1)
+    {
+        fprintf (stdout, "Running in debug loop.\n");
+        debug ();
     }
 
     fprintf (stdout, "Press keys on the keypad. Press 'ENTER' to quit.\n");
