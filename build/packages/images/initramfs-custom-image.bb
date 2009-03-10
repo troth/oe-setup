@@ -14,6 +14,7 @@ IMAGE_INSTALL = "\
     busybox \
     uclibc \
     ts-keypad \
+	ts-lcd-2x24 \
     ts7800-initramfs-init \
     "
 
