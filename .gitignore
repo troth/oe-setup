@@ -2,3 +2,4 @@ openembedded*
 tmp*
 sources
 bitbake*
+*.o
