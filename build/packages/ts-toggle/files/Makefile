@@ -9,7 +9,7 @@ RANLIB  = $(TOOLNAME)ranlib
 OBJCOPY = $(TOOLNAME)objcopy
 OBJDUMP = $(TOOLNAME)objdump
 
-PRG = ts-toggle-io
+PRG = ts-toggle
 SRC = \
 	$(PRG).c
 OBJ = $(SRC:%.c=%.o)

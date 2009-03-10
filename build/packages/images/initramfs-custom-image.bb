@@ -15,6 +15,7 @@ IMAGE_INSTALL = "\
     uclibc \
     ts-keypad \
 	ts-lcd-2x24 \
+	ts-toggle \
     ts7800-initramfs-init \
     "
 
