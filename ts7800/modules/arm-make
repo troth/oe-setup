@@ -1,0 +1,12 @@
+#!/bin/bash
+
+OEBASE="${OEBASE:-${HOME}/dev/OE}"
+
+export PATH="${OEBASE}/tmp/cross/armv5te/bin:${PATH}"
+path
+
+export KERNELDIR="${OEBASE}/tmp/work/ts7800-angstrom-linux-uclibcgnueabi/linux-2.6.28-r5/linux-2.6.28"
+export ARCH="arm"
+export CROSS_COMPILE="arm-angstrom-linux-uclibcgnueabi-"
+
+exec make "$@"
