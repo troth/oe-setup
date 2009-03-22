@@ -16,6 +16,7 @@ IMAGE_INSTALL = "\
     ts-keypad \
 	ts-lcd-2x24 \
 	ts-toggle \
+	evtest \
     ts7800-initramfs-init \
     "
 
