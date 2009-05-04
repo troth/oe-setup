@@ -5,6 +5,7 @@
 set -e
 
 IMAGES=(\
+    ts7xxx-qt-base-image \
     initramfs-custom-image \
     initramfs-minimal-image \
     console-image \
