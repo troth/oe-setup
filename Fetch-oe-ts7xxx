@@ -4,7 +4,12 @@
 # TS7xxx branch on top of it.
 #
 
-set -e
+TARGET="ts7390"
+
+#
+# Are we on the TARGET branch?
+#
+git checkout ${TARGET}
 
 if [ -d bitbake ]
 then
@@ -16,35 +21,45 @@ fi
 
 if [ -d openembedded ]
 then
-	echo "OpenEmbedded directory already exists. Cowardly exiting."
-	exit 1
+	echo "OpenEmbedded directory already exists. That's good."
+else
+	echo "OpenEmbedded directory does not exist."
+	echo "Cloning from git.openembedded.org..."
+	git clone git://git.openembedded.org/openembedded
 fi
 
 #
 # This sets origin to the official OE repository.
 #
-git clone git://git.openembedded.net/openembedded
 cd openembedded
 
 #
-# This creates a local branch for the ts7800
+# This creates a local branch for the ts7390
 #
-git branch --track ts7800 origin/org.openembedded.dev
-git checkout ts7800
+if git branch | grep ''${TARGET}'$'
+then
+	echo "${TARGET} branch exists"
+else
+	git branch --track ${TARGET} origin/org.openembedded.dev
+	git checkout ${TARGET}
+fi
 
 #
 # This allows simple access to the oe-ts7xxx repository on top of the official
 # OE repository.
 #
-git remote add github git://github.com/troth/oe-ts7xxx.git
+if ! grep '\[remote "github"\]' .git/config
+then
+	git remote add github git://github.com/troth/oe-ts7xxx.git
+fi
 
 #
 # Now pull in the oe-ts7xxx stuff from github.
 #
-git pull github ts7800
+git pull github ${TARGET}
 
 echo
 echo "If all went well, then you should tweak the SetupEnv script so that"
 echo "BASE reflects where you installed oe-setup. Then you should be ready"
-echo "to run the Make-console-image script"
+echo "to run the ./Make-image script"
 echo
