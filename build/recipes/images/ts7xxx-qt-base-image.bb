@@ -6,9 +6,6 @@ export IMAGE_BASENAME = "ts7xxx-qt-base-image"
 
 PR = "r1"
 
-DISTRO_DEV_MANAGER = "mdev"
-PREFERRED_PROVIDER_hotplug = "mdev"
-
 # Include a timestamp that initscripts can use to set the time to a
 # more sane value after a reboot
 IMAGE_PREPROCESS_COMMAND = "create_etc_timestamp"
@@ -19,8 +16,20 @@ IMAGE_INSTALL = "task-boot \
                  e2fsprogs \
                  dosfstools \
                  dbus \
+                 strace \
+                 evtest \
+                 tslib \
+                 tslib-dbg \
+                 tslib-calibrate \
+                 tslib-tests \
                  qt4-embedded \
+                 qt4-embedded-dbg \
+                 qt4-embedded-plugin-mousedriver-tslib \
+                 qt4-embedded-plugin-mousedriver-tslib-dbg \
                  ts-peekpoke \
+                 ts-fbtest \
+                 gdb \
+                 nfs-utils \
                 "
 
 IMAGE_LINGUAS = ""
