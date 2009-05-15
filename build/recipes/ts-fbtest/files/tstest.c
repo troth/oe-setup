@@ -528,6 +528,12 @@ int main (int argc, char **argv) {
   struct timeval t;
   int opt_usefb=0;
 
+  double ddd1 = 1.5;
+  double ddd2 = .5;
+  double ddd3 = ddd1/ddd2;
+
+  fprintf(stderr, "TEST FLOATING POINT: %f / %f = %f\n", ddd1, ddd2, ddd3);
+
   for (i=1;i<argc;i++) {
     if (argv[i][0] == 'h' || argv[i][0] == '?') {
       printf("options:\n");
@@ -537,7 +543,7 @@ int main (int argc, char **argv) {
       printf("fb uses the framebuffer driver and auto-detects resolution\n");
       printf("VGA uses VGA resolution (default is WVGA unless auto-detected\n");
       printf("off turns off the backlight when the program exits\n");
-      printf("ev uses /dev/input/event1 instead of reading the touchscreen registers directly\n");
+      printf("ev uses /dev/input/event0 instead of reading the touchscreen registers directly\n");
       return 0;
     }
     if (!strcmp(argv[i],"swapxy")) {
@@ -562,9 +568,9 @@ int main (int argc, char **argv) {
       }
     } else if (!strcmp(argv[i],"ev")) {
       if (!ev) {
-	ev = open("/dev/event1",O_RDONLY);
-	if (!ev) { perror("open /dev/event1:"); return 1; }
-	printf("Using /dev/event1\n");
+	ev = open("/dev/input/event0",O_RDONLY);
+	if (!ev) { perror("open /dev/input/event0:"); return 1; }
+	printf("Using /dev/input/event0\n");
       }
     } else if (!strcmp(argv[i],"VGA")) {
       WIDE=640;
